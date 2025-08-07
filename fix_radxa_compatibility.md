@@ -22,9 +22,9 @@ The newer `dbus-fast` versions (2.44.x) **do have ARM64 wheels** and work correc
 
 ### Step 1: Update Dependencies
 
-The `pyproject.toml` has been updated to use the latest compatible versions:
-- `dbus-fast ^2.44.0` - has ARM64 wheels and latest features
-- `bleak ^1.0.0` - latest version that supports `dbus-fast 2.x`
+The `pyproject.toml` has been updated to use compatible versions:
+- `dbus-fast ^2.44.0` - has ARM64 wheels (fixes the binary incompatibility)
+- `bleak ^0.22.0` - last stable 0.x version compatible with `bless` (bleak 1.x has breaking changes)
 
 ### Step 2: Update Your Environment
 
@@ -54,9 +54,13 @@ poetry show dbus-fast
 
 ## Why This Works
 
-- `dbus-fast` 2.44.x has precompiled ARM64 wheels on PyPI
-- These wheels are compatible with ARM64 Linux systems
-- By overriding the `bleak` constraint, we can use the newer, compatible version
+The fix addresses three compatibility constraints:
+
+1. **ARM64 compatibility**: `dbus-fast` 2.44.x has precompiled ARM64 wheels on PyPI
+2. **bleak compatibility**: `bleak` 0.22.x supports `dbus-fast` 2.x 
+3. **bless compatibility**: `bless` is incompatible with `bleak` 1.x due to module structure changes
+
+The solution uses `bleak` 0.22.x (last stable 0.x series) which works with both `dbus-fast` 2.x and `bless`.
 
 ## Alternative: Manual Override
 
@@ -66,7 +70,7 @@ If you need to test this before the project is updated, you can manually add thi
 [tool.poetry.dependencies]
 # ... existing dependencies ...
 dbus-fast = "^2.44.0"  # Latest version with ARM64 wheels
-bleak = "^1.0.0"       # Latest version compatible with dbus-fast 2.x
+bleak = "^0.22.0"      # Last 0.x version compatible with bless
 ```
 
 Then run:

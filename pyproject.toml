@@ -39,9 +39,9 @@ bless = "^0.2.6"
 dbus-next = "^0.2.3"
 nest-asyncio = "^1.6.0"
 configobj = "^5.0.8"
-# Use latest versions - bleak 1.x supports dbus-fast 2.x with ARM64 wheels
-dbus-fast = "^2.44.0"
-bleak = "^1.0.0"
+# Use latest versions that are compatible with each other
+dbus-fast = "^2.44.0"  # Latest version with ARM64 wheels
+bleak = "^0.22.0"      # Last 0.x version compatible with bless
 
 [tool.poetry.scripts]
 r3onboard = "r3onboard.__main__:main"
