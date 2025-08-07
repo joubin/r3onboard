@@ -386,32 +386,31 @@ def create_default_config() -> None:
     
     try:
         # Create the default config with comments matching the package template
-        default_config = ConfigObj()
-        default_config.filename = DEFAULT_CONFIG_FILE
+        # Write the config file manually to include proper comments
+        config_content = """# /etc/r3onboard/config.ini
+[Settings]
+# Set the ble duration (-1 for infinite)
+Duration = 10m
+# Set Log Level (debug, info, warning, error, critical)
+LogLevel = info
+"""
         
-        # Add initial comment
-        default_config.initial_comment = ["# /etc/r3onboard/config.ini"]
-        
-        # Add Settings section with comments
-        default_config['Settings'] = {}
-        default_config['Settings']['Duration'] = '10m'
-        default_config['Settings']['LogLevel'] = 'info'
-        
-        # Add inline comments for each setting
-        default_config.comments['Settings'] = {}
-        default_config.inline_comments['Settings'] = {}
-        default_config.inline_comments['Settings']['Duration'] = ' # Set the ble duration (-1 for infinite)'
-        default_config.inline_comments['Settings']['LogLevel'] = ' # Set Log Level (debug, info, warning, error, critical)'
-        
-        default_config.write()
+        with open(DEFAULT_CONFIG_FILE, 'w') as f:
+            f.write(config_content)
+            
         logging.info(f"Created default config file: {DEFAULT_CONFIG_FILE}")
         
     except Exception as e:
         logging.error(f"Failed to create default config file {DEFAULT_CONFIG_FILE}: {e}")
         # Fallback to simple config without comments
-        simple_config = ConfigObj(DEFAULT_CONFIG_FILE)
-        simple_config.update(DEFAULT_SETTINGS)
-        simple_config.write()
+        try:
+            simple_config = ConfigObj()
+            simple_config.filename = DEFAULT_CONFIG_FILE
+            simple_config.update(DEFAULT_SETTINGS)
+            simple_config.write()
+            logging.info(f"Created fallback config file: {DEFAULT_CONFIG_FILE}")
+        except Exception as fallback_error:
+            logging.error(f"Even fallback config creation failed: {fallback_error}")
 
 
 def merge_configs(default_config: ConfigObj, existing_config: ConfigObj) -> ConfigObj:
