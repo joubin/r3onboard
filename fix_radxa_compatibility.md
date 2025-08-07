@@ -1,0 +1,89 @@
+# Fix for r3onboard ARM64 Compatibility on Radxa Systems
+
+This document explains the issue and provides a solution for running r3onboard on ARM64 systems like the Radxa.
+
+## The Problem
+
+The r3onboard project fails to run on ARM64 systems (like your Radxa) with the error:
+
+```
+ValueError: dbus_fast._private.marshaller.Marshaller size changed, may indicate binary incompatibility. Expected 48 from C header, got 40 from PyObject
+```
+
+This happens because:
+
+1. The project was locked to `dbus-fast` version 1.95.2 (via `bleak` dependency)
+2. Version 1.95.2 doesn't have precompiled ARM64 wheels
+3. When it tries to compile from source, it creates binary incompatible extensions
+
+## The Solution
+
+The newer `dbus-fast` versions (2.44.x) **do have ARM64 wheels** and work correctly on ARM64 systems.
+
+### Step 1: Update Dependencies
+
+The `pyproject.toml` has been updated to override the `bleak` constraint and allow `dbus-fast ^2.44.0`.
+
+### Step 2: Update Your Environment
+
+Run these commands on your Radxa system:
+
+```bash
+# Remove the old virtual environment
+rm -rf .venv
+
+# Update the lock file to use the new constraints
+poetry lock --no-update
+
+# Install with the new dependencies
+poetry install
+
+# Test that it works
+poetry run r3onboard
+```
+
+### Step 3: Verify the Fix
+
+After running the above commands, you should see that `dbus-fast` version 2.44.x is installed with proper ARM64 wheels:
+
+```bash
+poetry show dbus-fast
+```
+
+## Why This Works
+
+- `dbus-fast` 2.44.x has precompiled ARM64 wheels on PyPI
+- These wheels are compatible with ARM64 Linux systems
+- By overriding the `bleak` constraint, we can use the newer, compatible version
+
+## Alternative: Manual Override
+
+If you need to test this before the project is updated, you can manually add this to your `pyproject.toml`:
+
+```toml
+[tool.poetry.dependencies]
+# ... existing dependencies ...
+dbus-fast = "^2.44.0"  # Override bleak's constraint for ARM64 compatibility
+```
+
+Then run:
+```bash
+poetry lock
+poetry install
+```
+
+## Verification
+
+The fix is working if:
+1. `poetry install` completes without errors
+2. `poetry run r3onboard` starts without the marshaller error
+3. `poetry show dbus-fast` shows version 2.44.x
+
+## Technical Details
+
+- The issue affects all ARM64 systems running Python with certain library versions
+- `dbus-fast` 1.95.2 lacks ARM64 wheels, forcing source compilation
+- Source compilation creates binary incompatible extensions on modern ARM64 systems
+- `dbus-fast` 2.44.x includes proper ARM64 wheels that work correctly
+
+This fix maintains compatibility with other architectures while solving the ARM64 issue. 
