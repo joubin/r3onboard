@@ -22,9 +22,9 @@ The newer `dbus-fast` versions (2.44.x) **do have ARM64 wheels** and work correc
 
 ### Step 1: Update Dependencies
 
-The `pyproject.toml` has been updated to:
-- Override the `bleak` constraint and allow `dbus-fast ^2.44.0` 
-- Ensure `bleak ^0.20.0` for compatibility with `bless`
+The `pyproject.toml` has been updated to use the latest compatible versions:
+- `dbus-fast ^2.44.0` - has ARM64 wheels and latest features
+- `bleak ^1.0.0` - latest version that supports `dbus-fast 2.x`
 
 ### Step 2: Update Your Environment
 
