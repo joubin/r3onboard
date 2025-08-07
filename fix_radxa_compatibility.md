@@ -22,7 +22,9 @@ The newer `dbus-fast` versions (2.44.x) **do have ARM64 wheels** and work correc
 
 ### Step 1: Update Dependencies
 
-The `pyproject.toml` has been updated to override the `bleak` constraint and allow `dbus-fast ^2.44.0`.
+The `pyproject.toml` has been updated to:
+- Override the `bleak` constraint and allow `dbus-fast ^2.44.0` 
+- Ensure `bleak ^0.20.0` for compatibility with `bless`
 
 ### Step 2: Update Your Environment
 
@@ -32,8 +34,8 @@ Run these commands on your Radxa system:
 # Remove the old virtual environment
 rm -rf .venv
 
-# Update the lock file to use the new constraints
-poetry lock --no-update
+# Update the lock file to use the new constraints (allow updates this time)
+poetry lock
 
 # Install with the new dependencies
 poetry install
@@ -63,7 +65,8 @@ If you need to test this before the project is updated, you can manually add thi
 ```toml
 [tool.poetry.dependencies]
 # ... existing dependencies ...
-dbus-fast = "^2.44.0"  # Override bleak's constraint for ARM64 compatibility
+dbus-fast = "^2.44.0"  # Override bleak's constraint for ARM64 compatibility  
+bleak = "^0.20.0"      # Ensure compatible version with bless
 ```
 
 Then run:

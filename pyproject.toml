@@ -41,6 +41,8 @@ nest-asyncio = "^1.6.0"
 configobj = "^5.0.8"
 # Override bleak's constraint to allow newer dbus-fast with ARM64 support
 dbus-fast = "^2.44.0"
+# Ensure bleak is recent enough to work with bless
+bleak = "^0.20.0"
 
 [tool.poetry.scripts]
 r3onboard = "r3onboard.__main__:main"
