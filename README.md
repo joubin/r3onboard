@@ -199,3 +199,19 @@ COMMISSION_SERVICE_UUID = f"0000a000-{BASE_UUID}"
   ```sh
   [START]{"command": "R3_REGISTER", "code": "<CODE>"}[END]
   ```
+
+  ## Default Configs
+
+  # /etc/r3onboard/config.ini
+[Settings]
+# Set the ble duration (-1 for infinite)
+Duration = 10m
+# Set Log Level (debug, info, warning, error, critical)
+LogLevel = inforoot@sensor06082025:/tmp/r3deb# 
+root@sensor06082025:/tmp/r3deb# cat ./etc/r3onboard/config.ini.default
+# /etc/r3onboard/config.ini
+[Settings]
+# Set the ble duration (-1 for infinite)
+Duration = 10m
+# Set Log Level (debug, info, warning, error, critical)
+LogLevel = info

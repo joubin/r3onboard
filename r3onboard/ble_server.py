@@ -28,7 +28,7 @@ DEFAULT_CONFIG_FILE = "/etc/r3onboard/config.ini.default"
 
 DEFAULT_SETTINGS = {
     "Settings": {
-        "Duration": "5min",
+        "Duration": "10m",
         "LogLevel": "info",
     }
 }
@@ -373,10 +373,45 @@ class BleServer:
 
 
 def create_default_config() -> None:
-    # Create the default configuration file with predefined settings.
-    default_config = ConfigObj(DEFAULT_CONFIG_FILE)
-    default_config.update(DEFAULT_SETTINGS)
-    default_config.write()
+    """Create the default configuration file with predefined settings and comments."""
+    # Ensure the config directory exists
+    config_dir = os.path.dirname(DEFAULT_CONFIG_FILE)
+    if not os.path.exists(config_dir):
+        try:
+            os.makedirs(config_dir, mode=0o755, exist_ok=True)
+            logging.info(f"Created config directory: {config_dir}")
+        except OSError as e:
+            logging.error(f"Failed to create config directory {config_dir}: {e}")
+            return
+    
+    try:
+        # Create the default config with comments matching the package template
+        default_config = ConfigObj()
+        default_config.filename = DEFAULT_CONFIG_FILE
+        
+        # Add initial comment
+        default_config.initial_comment = ["# /etc/r3onboard/config.ini"]
+        
+        # Add Settings section with comments
+        default_config['Settings'] = {}
+        default_config['Settings']['Duration'] = '10m'
+        default_config['Settings']['LogLevel'] = 'info'
+        
+        # Add inline comments for each setting
+        default_config.comments['Settings'] = {}
+        default_config.inline_comments['Settings'] = {}
+        default_config.inline_comments['Settings']['Duration'] = ' # Set the ble duration (-1 for infinite)'
+        default_config.inline_comments['Settings']['LogLevel'] = ' # Set Log Level (debug, info, warning, error, critical)'
+        
+        default_config.write()
+        logging.info(f"Created default config file: {DEFAULT_CONFIG_FILE}")
+        
+    except Exception as e:
+        logging.error(f"Failed to create default config file {DEFAULT_CONFIG_FILE}: {e}")
+        # Fallback to simple config without comments
+        simple_config = ConfigObj(DEFAULT_CONFIG_FILE)
+        simple_config.update(DEFAULT_SETTINGS)
+        simple_config.write()
 
 
 def merge_configs(default_config: ConfigObj, existing_config: ConfigObj) -> ConfigObj:
@@ -393,6 +428,7 @@ def merge_configs(default_config: ConfigObj, existing_config: ConfigObj) -> Conf
 
 
 def read_config() -> Dict[str, Any]:
+    """Read and merge configuration from default and user config files."""
     # Create the default configuration if it doesn't exist
     if not os.path.exists(DEFAULT_CONFIG_FILE):
         create_default_config()
@@ -408,9 +444,24 @@ def read_config() -> Dict[str, Any]:
     else:
         merged_config = default_config
 
+    # Ensure the main config directory exists before writing
+    config_dir = os.path.dirname(CONFIG_FILE)
+    if not os.path.exists(config_dir):
+        try:
+            os.makedirs(config_dir, mode=0o755, exist_ok=True)
+            logging.info(f"Created config directory: {config_dir}")
+        except OSError as e:
+            logging.error(f"Failed to create config directory {config_dir}: {e}")
+            # Return the merged config without writing if directory creation fails
+            return {section: dict(merged_config[section]) for section in merged_config}
+
     # Write the merged configuration back to the config file
-    merged_config.filename = CONFIG_FILE
-    merged_config.write()
+    try:
+        merged_config.filename = CONFIG_FILE
+        merged_config.write()
+        logging.info(f"Configuration written to: {CONFIG_FILE}")
+    except Exception as e:
+        logging.error(f"Failed to write config file {CONFIG_FILE}: {e}")
 
     return {section: dict(merged_config[section]) for section in merged_config}
 
