@@ -65,8 +65,8 @@ If you need to test this before the project is updated, you can manually add thi
 ```toml
 [tool.poetry.dependencies]
 # ... existing dependencies ...
-dbus-fast = "^2.44.0"  # Override bleak's constraint for ARM64 compatibility  
-bleak = "^0.20.0"      # Ensure compatible version with bless
+dbus-fast = "^2.44.0"  # Latest version with ARM64 wheels
+bleak = "^1.0.0"       # Latest version compatible with dbus-fast 2.x
 ```
 
 Then run:
