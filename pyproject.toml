@@ -34,7 +34,7 @@ strict_optional = true
 exclude = "tests|package"
 
 [tool.poetry.dependencies]
-python = "^3.11"
+python = ">=3.11,<3.14"
 bless = "^0.2.6"
 dbus-next = "^0.2.3"
 nest-asyncio = "^1.6.0"
